@@ -79,8 +79,8 @@ export default function ShortenForm({ onSuccess }: ShortenFormProps) {
   const aliasState = getAliasValidationState(alias);
   const aliasBlocked = aliasState.status === "reserved" || aliasState.status === "invalid";
 
-  // Today's date string (YYYY-MM-DD) for min date constraint
-  const todayStr = new Date().toISOString().split("T")[0];
+  // Current datetime string (YYYY-MM-DDTHH:MM) for min datetime constraint
+  const nowStr = new Date().toISOString().slice(0, 16);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -252,14 +252,14 @@ export default function ShortenForm({ onSuccess }: ShortenFormProps) {
             <input
               id="expires-input"
               className="adv-date-input"
-              type="date"
+              type="datetime-local"
               value={expiresAt}
-              min={todayStr}
+              min={nowStr}
               onChange={(e) => setExpiresAt(e.target.value)}
               disabled={loading}
             />
             <p className="alias-hint hint-neutral">
-              Link returns "expired" after this date
+              Link returns &ldquo;expired&rdquo; after this time
             </p>
           </div>
 
@@ -272,14 +272,14 @@ export default function ShortenForm({ onSuccess }: ShortenFormProps) {
             <input
               id="activates-input"
               className="adv-date-input"
-              type="date"
+              type="datetime-local"
               value={activatesAt}
-              min={todayStr}
+              min={nowStr}
               onChange={(e) => setActivatesAt(e.target.value)}
               disabled={loading}
             />
             <p className="alias-hint hint-neutral">
-              Link won&apos;t work before this date
+              Link won&apos;t work before this time
             </p>
           </div>
         </div>
