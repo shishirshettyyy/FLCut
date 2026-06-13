@@ -5,6 +5,9 @@ export async function GET() {
   try {
     const links = await prisma.link.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        _count: { select: { clicks: true } },
+      },
     });
     return NextResponse.json(links);
   } catch (error) {

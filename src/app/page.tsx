@@ -10,7 +10,11 @@ interface Link {
   id: number;
   originalUrl: string;
   shortCode: string;
+  customAlias?: string | null;
+  expiresAt?: string | null;
+  activatesAt?: string | null;
   createdAt: string;
+  _count?: { clicks: number };
 }
 
 function formatDate(iso: string) {
