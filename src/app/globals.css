@@ -947,6 +947,50 @@ body {
   color: var(--amber-600);
 }
 
+/* ── Delete Button ───────────────────────────────── */
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1.5px solid var(--sand-200);
+  border-radius: var(--radius-md);
+  padding: 5px 10px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.delete-btn:hover:not(:disabled) {
+  border-color: var(--rose-400);
+  color: var(--rose-500);
+  background: rgba(244,63,94,0.05);
+}
+
+/* Confirm state — amber "are you sure?" */
+.delete-btn.confirm {
+  border-color: var(--amber-400);
+  background: rgba(251,191,36,0.10);
+  color: var(--amber-600);
+  animation: pulse-warn 0.4s ease;
+}
+
+@keyframes pulse-warn {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* Deleting state — muted */
+.delete-btn.deleting {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* ── Active row highlight ─────────────────────────── */
 .row-active td {
   background: rgba(251,191,36,0.04) !important;

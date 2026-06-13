@@ -12,6 +12,7 @@ import {
   Tag,
   BarChart3,
   MousePointerClick,
+  Trash2,
 } from "lucide-react";
 import AnalyticsDrawer from "./AnalyticsPanel";
 
@@ -102,6 +103,8 @@ export default function LinksTable({
   baseUrl,
 }: LinksTableProps) {
   const [activeLink, setActiveLink] = useState<Link | null>(null);
+  // Map of linkId → "idle" | "confirm" | "deleting"
+  const [deleteState, setDeleteState] = useState<Record<number, string>>({});
 
   function openAnalytics(link: Link) {
     setActiveLink(link);
@@ -109,6 +112,36 @@ export default function LinksTable({
 
   function closeAnalytics() {
     setActiveLink(null);
+  }
+
+  async function handleDelete(linkId: number) {
+    const state = deleteState[linkId] ?? "idle";
+
+    // First click → ask for confirmation
+    if (state === "idle") {
+      setDeleteState((prev) => ({ ...prev, [linkId]: "confirm" }));
+      // Auto-reset after 3 s if the user doesn't confirm
+      setTimeout(() => {
+        setDeleteState((prev) =>
+          prev[linkId] === "confirm" ? { ...prev, [linkId]: "idle" } : prev
+        );
+      }, 3000);
+      return;
+    }
+
+    // Second click → actually delete
+    if (state === "confirm") {
+      setDeleteState((prev) => ({ ...prev, [linkId]: "deleting" }));
+      if (activeLink?.id === linkId) closeAnalytics();
+      try {
+        const res = await fetch(`/api/links/${linkId}`, { method: "DELETE" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        onRefresh();
+      } catch (err) {
+        console.error("[delete]", err);
+        setDeleteState((prev) => ({ ...prev, [linkId]: "idle" }));
+      }
+    }
   }
 
   return (
@@ -145,7 +178,7 @@ export default function LinksTable({
               <p className="empty-sub">
                 Shorten your first URL above — it will appear
                 <br />
-                here in real-time and sync to Prisma Studio.
+                here and sync to the database in real-time.
               </p>
             </div>
           ) : (
@@ -180,86 +213,107 @@ export default function LinksTable({
                       Analytics
                     </span>
                   </th>
+                  <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
-                {links.map((link) => (
-                  <tr
-                    key={link.id}
-                    className={`${link.id === newestId ? "row-new" : ""} ${activeLink?.id === link.id ? "row-active" : ""}`}
-                  >
-                    <td className="td-id">#{link.id}</td>
+                {links.map((link) => {
+                  const ds = deleteState[link.id] ?? "idle";
+                  return (
+                    <tr
+                      key={link.id}
+                      className={`${link.id === newestId ? "row-new" : ""} ${activeLink?.id === link.id ? "row-active" : ""}`}
+                    >
+                      <td className="td-id">#{link.id}</td>
 
-                    <td className="td-original" title={link.originalUrl}>
-                      <a
-                        href={link.originalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                          color: "inherit",
-                          textDecoration: "none",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
-                      >
-                        {link.originalUrl}
-                        <ExternalLink
-                          size={11}
-                          style={{ flexShrink: 0, opacity: 0.5 }}
+                      <td className="td-original" title={link.originalUrl}>
+                        <a
+                          href={link.originalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            color: "inherit",
+                            textDecoration: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 5,
+                          }}
+                        >
+                          {link.originalUrl}
+                          <ExternalLink
+                            size={11}
+                            style={{ flexShrink: 0, opacity: 0.5 }}
+                          />
+                        </a>
+                      </td>
+
+                      <td>
+                        <span className="short-badge">
+                          <Link2 size={10} strokeWidth={2.5} />
+                          {link.customAlias ?? link.shortCode}
+                        </span>
+                        {link.customAlias && (
+                          <span className="alias-chip">alias</span>
+                        )}
+                      </td>
+
+                      <td className="td-short-url">
+                        {baseUrl}/{link.customAlias ?? link.shortCode}
+                      </td>
+
+                      {/* Click count badge */}
+                      <td>
+                        <span className="click-count-badge">
+                          <MousePointerClick size={10} strokeWidth={2.5} />
+                          {link._count?.clicks ?? 0}
+                        </span>
+                      </td>
+
+                      <td>
+                        <LinkStatus
+                          expiresAt={link.expiresAt}
+                          activatesAt={link.activatesAt}
                         />
-                      </a>
-                    </td>
+                      </td>
 
-                    <td>
-                      <span className="short-badge">
-                        <Link2 size={10} strokeWidth={2.5} />
-                        {link.customAlias ?? link.shortCode}
-                      </span>
-                      {link.customAlias && (
-                        <span className="alias-chip">alias</span>
-                      )}
-                    </td>
+                      <td className="td-date">{formatDate(link.createdAt)}</td>
 
-                    <td className="td-short-url">
-                      {baseUrl}/{link.customAlias ?? link.shortCode}
-                    </td>
+                      {/* Analytics button */}
+                      <td>
+                        <button
+                          className={`analytics-toggle-btn ${activeLink?.id === link.id ? "active" : ""}`}
+                          onClick={() =>
+                            activeLink?.id === link.id
+                              ? closeAnalytics()
+                              : openAnalytics(link)
+                          }
+                          title="View analytics"
+                        >
+                          <BarChart3 size={12} strokeWidth={2} />
+                          Stats
+                        </button>
+                      </td>
 
-                    {/* Click count badge */}
-                    <td>
-                      <span className="click-count-badge">
-                        <MousePointerClick size={10} strokeWidth={2.5} />
-                        {link._count?.clicks ?? 0}
-                      </span>
-                    </td>
-
-                    <td>
-                      <LinkStatus
-                        expiresAt={link.expiresAt}
-                        activatesAt={link.activatesAt}
-                      />
-                    </td>
-
-                    <td className="td-date">{formatDate(link.createdAt)}</td>
-
-                    {/* Analytics button */}
-                    <td>
-                      <button
-                        className={`analytics-toggle-btn ${activeLink?.id === link.id ? "active" : ""}`}
-                        onClick={() =>
-                          activeLink?.id === link.id
-                            ? closeAnalytics()
-                            : openAnalytics(link)
-                        }
-                        title="View analytics"
-                      >
-                        <BarChart3 size={12} strokeWidth={2} />
-                        Stats
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      {/* Delete button */}
+                      <td>
+                        <button
+                          className={`delete-btn ${ds === "confirm" ? "confirm" : ""} ${ds === "deleting" ? "deleting" : ""}`}
+                          onClick={() => handleDelete(link.id)}
+                          disabled={ds === "deleting"}
+                          title={ds === "confirm" ? "Click again to confirm deletion" : "Delete this link"}
+                        >
+                          <Trash2 size={12} strokeWidth={2} />
+                          {ds === "confirm"
+                            ? "Sure?"
+                            : ds === "deleting"
+                            ? "…"
+                            : "Delete"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
