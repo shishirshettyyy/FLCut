@@ -98,8 +98,7 @@ export default function DashboardPage() {
               <span className="highlight">short & sharp</span>
             </h1>
             <p className="hero-sub">
-              Paste any URL, get a clean short link, and watch it
-              sync live to your Prisma Studio database.
+              Paste any URL, get a clean short link
             </p>
           </header>
 
