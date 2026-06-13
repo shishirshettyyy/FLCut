@@ -8,8 +8,26 @@ datasource db {
 }
 
 model Link {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   originalUrl String
-  shortCode   String   @unique
-  createdAt   DateTime @default(now())
+  shortCode   String    @unique
+  customAlias String?   @unique
+  expiresAt   DateTime?
+  activatesAt DateTime?
+  createdAt   DateTime  @default(now())
+  clicks      Click[]
+}
+
+model Click {
+  id         Int      @id @default(autoincrement())
+  linkId     Int
+  link       Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  visitorId  String   // cookie-based fingerprint for unique detection
+  isUnique   Boolean  @default(false)
+  referrer   String?  // raw Referer header value
+  source     String   // parsed platform label: "Instagram", "WhatsApp", "Direct", etc.
+  clickedAt  DateTime @default(now())
+
+  @@index([linkId])
+  @@index([linkId, visitorId])
 }

@@ -38,6 +38,9 @@ export type LinkMinAggregateOutputType = {
   id: number | null
   originalUrl: string | null
   shortCode: string | null
+  customAlias: string | null
+  expiresAt: Date | null
+  activatesAt: Date | null
   createdAt: Date | null
 }
 
@@ -45,6 +48,9 @@ export type LinkMaxAggregateOutputType = {
   id: number | null
   originalUrl: string | null
   shortCode: string | null
+  customAlias: string | null
+  expiresAt: Date | null
+  activatesAt: Date | null
   createdAt: Date | null
 }
 
@@ -52,6 +58,9 @@ export type LinkCountAggregateOutputType = {
   id: number
   originalUrl: number
   shortCode: number
+  customAlias: number
+  expiresAt: number
+  activatesAt: number
   createdAt: number
   _all: number
 }
@@ -69,6 +78,9 @@ export type LinkMinAggregateInputType = {
   id?: true
   originalUrl?: true
   shortCode?: true
+  customAlias?: true
+  expiresAt?: true
+  activatesAt?: true
   createdAt?: true
 }
 
@@ -76,6 +88,9 @@ export type LinkMaxAggregateInputType = {
   id?: true
   originalUrl?: true
   shortCode?: true
+  customAlias?: true
+  expiresAt?: true
+  activatesAt?: true
   createdAt?: true
 }
 
@@ -83,6 +98,9 @@ export type LinkCountAggregateInputType = {
   id?: true
   originalUrl?: true
   shortCode?: true
+  customAlias?: true
+  expiresAt?: true
+  activatesAt?: true
   createdAt?: true
   _all?: true
 }
@@ -177,6 +195,9 @@ export type LinkGroupByOutputType = {
   id: number
   originalUrl: string
   shortCode: string
+  customAlias: string | null
+  expiresAt: Date | null
+  activatesAt: Date | null
   createdAt: Date
   _count: LinkCountAggregateOutputType | null
   _avg: LinkAvgAggregateOutputType | null
@@ -207,30 +228,45 @@ export type LinkWhereInput = {
   id?: Prisma.IntFilter<"Link"> | number
   originalUrl?: Prisma.StringFilter<"Link"> | string
   shortCode?: Prisma.StringFilter<"Link"> | string
+  customAlias?: Prisma.StringNullableFilter<"Link"> | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Link"> | Date | string | null
+  activatesAt?: Prisma.DateTimeNullableFilter<"Link"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Link"> | Date | string
+  clicks?: Prisma.ClickListRelationFilter
 }
 
 export type LinkOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   originalUrl?: Prisma.SortOrder
   shortCode?: Prisma.SortOrder
+  customAlias?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  activatesAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  clicks?: Prisma.ClickOrderByRelationAggregateInput
 }
 
 export type LinkWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   shortCode?: string
+  customAlias?: string
   AND?: Prisma.LinkWhereInput | Prisma.LinkWhereInput[]
   OR?: Prisma.LinkWhereInput[]
   NOT?: Prisma.LinkWhereInput | Prisma.LinkWhereInput[]
   originalUrl?: Prisma.StringFilter<"Link"> | string
+  expiresAt?: Prisma.DateTimeNullableFilter<"Link"> | Date | string | null
+  activatesAt?: Prisma.DateTimeNullableFilter<"Link"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Link"> | Date | string
-}, "id" | "shortCode">
+  clicks?: Prisma.ClickListRelationFilter
+}, "id" | "shortCode" | "customAlias">
 
 export type LinkOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   originalUrl?: Prisma.SortOrder
   shortCode?: Prisma.SortOrder
+  customAlias?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  activatesAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.LinkCountOrderByAggregateInput
   _avg?: Prisma.LinkAvgOrderByAggregateInput
@@ -246,45 +282,70 @@ export type LinkScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Link"> | number
   originalUrl?: Prisma.StringWithAggregatesFilter<"Link"> | string
   shortCode?: Prisma.StringWithAggregatesFilter<"Link"> | string
+  customAlias?: Prisma.StringNullableWithAggregatesFilter<"Link"> | string | null
+  expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Link"> | Date | string | null
+  activatesAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Link"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Link"> | Date | string
 }
 
 export type LinkCreateInput = {
   originalUrl: string
   shortCode: string
+  customAlias?: string | null
+  expiresAt?: Date | string | null
+  activatesAt?: Date | string | null
   createdAt?: Date | string
+  clicks?: Prisma.ClickCreateNestedManyWithoutLinkInput
 }
 
 export type LinkUncheckedCreateInput = {
   id?: number
   originalUrl: string
   shortCode: string
+  customAlias?: string | null
+  expiresAt?: Date | string | null
+  activatesAt?: Date | string | null
   createdAt?: Date | string
+  clicks?: Prisma.ClickUncheckedCreateNestedManyWithoutLinkInput
 }
 
 export type LinkUpdateInput = {
   originalUrl?: Prisma.StringFieldUpdateOperationsInput | string
   shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatesAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clicks?: Prisma.ClickUpdateManyWithoutLinkNestedInput
 }
 
 export type LinkUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   originalUrl?: Prisma.StringFieldUpdateOperationsInput | string
   shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatesAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clicks?: Prisma.ClickUncheckedUpdateManyWithoutLinkNestedInput
 }
 
 export type LinkCreateManyInput = {
   id?: number
   originalUrl: string
   shortCode: string
+  customAlias?: string | null
+  expiresAt?: Date | string | null
+  activatesAt?: Date | string | null
   createdAt?: Date | string
 }
 
 export type LinkUpdateManyMutationInput = {
   originalUrl?: Prisma.StringFieldUpdateOperationsInput | string
   shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatesAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -292,6 +353,9 @@ export type LinkUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   originalUrl?: Prisma.StringFieldUpdateOperationsInput | string
   shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatesAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -299,6 +363,9 @@ export type LinkCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   originalUrl?: Prisma.SortOrder
   shortCode?: Prisma.SortOrder
+  customAlias?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
+  activatesAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -310,6 +377,9 @@ export type LinkMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   originalUrl?: Prisma.SortOrder
   shortCode?: Prisma.SortOrder
+  customAlias?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
+  activatesAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -317,6 +387,9 @@ export type LinkMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   originalUrl?: Prisma.SortOrder
   shortCode?: Prisma.SortOrder
+  customAlias?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
+  activatesAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -324,8 +397,21 @@ export type LinkSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
+export type LinkScalarRelationFilter = {
+  is?: Prisma.LinkWhereInput
+  isNot?: Prisma.LinkWhereInput
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -340,19 +426,124 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type LinkCreateNestedOneWithoutClicksInput = {
+  create?: Prisma.XOR<Prisma.LinkCreateWithoutClicksInput, Prisma.LinkUncheckedCreateWithoutClicksInput>
+  connectOrCreate?: Prisma.LinkCreateOrConnectWithoutClicksInput
+  connect?: Prisma.LinkWhereUniqueInput
+}
+
+export type LinkUpdateOneRequiredWithoutClicksNestedInput = {
+  create?: Prisma.XOR<Prisma.LinkCreateWithoutClicksInput, Prisma.LinkUncheckedCreateWithoutClicksInput>
+  connectOrCreate?: Prisma.LinkCreateOrConnectWithoutClicksInput
+  upsert?: Prisma.LinkUpsertWithoutClicksInput
+  connect?: Prisma.LinkWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LinkUpdateToOneWithWhereWithoutClicksInput, Prisma.LinkUpdateWithoutClicksInput>, Prisma.LinkUncheckedUpdateWithoutClicksInput>
+}
+
+export type LinkCreateWithoutClicksInput = {
+  originalUrl: string
+  shortCode: string
+  customAlias?: string | null
+  expiresAt?: Date | string | null
+  activatesAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type LinkUncheckedCreateWithoutClicksInput = {
+  id?: number
+  originalUrl: string
+  shortCode: string
+  customAlias?: string | null
+  expiresAt?: Date | string | null
+  activatesAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type LinkCreateOrConnectWithoutClicksInput = {
+  where: Prisma.LinkWhereUniqueInput
+  create: Prisma.XOR<Prisma.LinkCreateWithoutClicksInput, Prisma.LinkUncheckedCreateWithoutClicksInput>
+}
+
+export type LinkUpsertWithoutClicksInput = {
+  update: Prisma.XOR<Prisma.LinkUpdateWithoutClicksInput, Prisma.LinkUncheckedUpdateWithoutClicksInput>
+  create: Prisma.XOR<Prisma.LinkCreateWithoutClicksInput, Prisma.LinkUncheckedCreateWithoutClicksInput>
+  where?: Prisma.LinkWhereInput
+}
+
+export type LinkUpdateToOneWithWhereWithoutClicksInput = {
+  where?: Prisma.LinkWhereInput
+  data: Prisma.XOR<Prisma.LinkUpdateWithoutClicksInput, Prisma.LinkUncheckedUpdateWithoutClicksInput>
+}
+
+export type LinkUpdateWithoutClicksInput = {
+  originalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatesAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LinkUncheckedUpdateWithoutClicksInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  originalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatesAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type LinkCountOutputType
+ */
+
+export type LinkCountOutputType = {
+  clicks: number
+}
+
+export type LinkCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  clicks?: boolean | LinkCountOutputTypeCountClicksArgs
+}
+
+/**
+ * LinkCountOutputType without action
+ */
+export type LinkCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LinkCountOutputType
+   */
+  select?: Prisma.LinkCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * LinkCountOutputType without action
+ */
+export type LinkCountOutputTypeCountClicksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClickWhereInput
+}
 
 
 export type LinkSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   originalUrl?: boolean
   shortCode?: boolean
+  customAlias?: boolean
+  expiresAt?: boolean
+  activatesAt?: boolean
   createdAt?: boolean
+  clicks?: boolean | Prisma.Link$clicksArgs<ExtArgs>
+  _count?: boolean | Prisma.LinkCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["link"]>
 
 export type LinkSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   originalUrl?: boolean
   shortCode?: boolean
+  customAlias?: boolean
+  expiresAt?: boolean
+  activatesAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["link"]>
 
@@ -360,6 +551,9 @@ export type LinkSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   originalUrl?: boolean
   shortCode?: boolean
+  customAlias?: boolean
+  expiresAt?: boolean
+  activatesAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["link"]>
 
@@ -367,18 +561,32 @@ export type LinkSelectScalar = {
   id?: boolean
   originalUrl?: boolean
   shortCode?: boolean
+  customAlias?: boolean
+  expiresAt?: boolean
+  activatesAt?: boolean
   createdAt?: boolean
 }
 
-export type LinkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "originalUrl" | "shortCode" | "createdAt", ExtArgs["result"]["link"]>
+export type LinkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "originalUrl" | "shortCode" | "customAlias" | "expiresAt" | "activatesAt" | "createdAt", ExtArgs["result"]["link"]>
+export type LinkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  clicks?: boolean | Prisma.Link$clicksArgs<ExtArgs>
+  _count?: boolean | Prisma.LinkCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type LinkIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type LinkIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $LinkPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Link"
-  objects: {}
+  objects: {
+    clicks: Prisma.$ClickPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     originalUrl: string
     shortCode: string
+    customAlias: string | null
+    expiresAt: Date | null
+    activatesAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["link"]>
   composites: {}
@@ -774,6 +982,7 @@ readonly fields: LinkFieldRefs;
  */
 export interface Prisma__LinkClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  clicks<T extends Prisma.Link$clicksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Link$clicksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -806,6 +1015,9 @@ export interface LinkFieldRefs {
   readonly id: Prisma.FieldRef<"Link", 'Int'>
   readonly originalUrl: Prisma.FieldRef<"Link", 'String'>
   readonly shortCode: Prisma.FieldRef<"Link", 'String'>
+  readonly customAlias: Prisma.FieldRef<"Link", 'String'>
+  readonly expiresAt: Prisma.FieldRef<"Link", 'DateTime'>
+  readonly activatesAt: Prisma.FieldRef<"Link", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Link", 'DateTime'>
 }
     
@@ -823,6 +1035,10 @@ export type LinkFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Link
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
   /**
    * Filter, which Link to fetch.
    */
@@ -842,6 +1058,10 @@ export type LinkFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
+  /**
    * Filter, which Link to fetch.
    */
   where: Prisma.LinkWhereUniqueInput
@@ -859,6 +1079,10 @@ export type LinkFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Link
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
   /**
    * Filter, which Link to fetch.
    */
@@ -908,6 +1132,10 @@ export type LinkFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
+  /**
    * Filter, which Link to fetch.
    */
   where?: Prisma.LinkWhereInput
@@ -955,6 +1183,10 @@ export type LinkFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the Link
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
   /**
    * Filter, which Links to fetch.
    */
@@ -1004,6 +1236,10 @@ export type LinkCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
+  /**
    * The data needed to create a Link.
    */
   data: Prisma.XOR<Prisma.LinkCreateInput, Prisma.LinkUncheckedCreateInput>
@@ -1051,6 +1287,10 @@ export type LinkUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Link
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
   /**
    * The data needed to update a Link.
    */
@@ -1118,6 +1358,10 @@ export type LinkUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
+  /**
    * The filter to search for the Link to update in case it exists.
    */
   where: Prisma.LinkWhereUniqueInput
@@ -1144,6 +1388,10 @@ export type LinkDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
+  /**
    * Filter which Link to delete.
    */
   where: Prisma.LinkWhereUniqueInput
@@ -1164,6 +1412,30 @@ export type LinkDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Link.clicks
+ */
+export type Link$clicksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Click
+   */
+  select?: Prisma.ClickSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Click
+   */
+  omit?: Prisma.ClickOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClickInclude<ExtArgs> | null
+  where?: Prisma.ClickWhereInput
+  orderBy?: Prisma.ClickOrderByWithRelationInput | Prisma.ClickOrderByWithRelationInput[]
+  cursor?: Prisma.ClickWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClickScalarFieldEnum | Prisma.ClickScalarFieldEnum[]
+}
+
+/**
  * Link without action
  */
 export type LinkDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1175,4 +1447,8 @@ export type LinkDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the Link
    */
   omit?: Prisma.LinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LinkInclude<ExtArgs> | null
 }

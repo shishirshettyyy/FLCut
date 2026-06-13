@@ -9,4 +9,5 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Link'
+export type * from './models/Click'
 export type * from './commonInputTypes'

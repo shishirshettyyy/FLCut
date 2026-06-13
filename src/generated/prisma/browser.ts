@@ -22,3 +22,8 @@ export * from './enums';
  * 
  */
 export type Link = Prisma.LinkModel
+/**
+ * Model Click
+ * 
+ */
+export type Click = Prisma.ClickModel

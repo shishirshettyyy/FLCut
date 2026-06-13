@@ -51,7 +51,8 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Link: 'Link'
+  Link: 'Link',
+  Click: 'Click'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -74,10 +75,26 @@ export const LinkScalarFieldEnum = {
   id: 'id',
   originalUrl: 'originalUrl',
   shortCode: 'shortCode',
+  customAlias: 'customAlias',
+  expiresAt: 'expiresAt',
+  activatesAt: 'activatesAt',
   createdAt: 'createdAt'
 } as const
 
 export type LinkScalarFieldEnum = (typeof LinkScalarFieldEnum)[keyof typeof LinkScalarFieldEnum]
+
+
+export const ClickScalarFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  visitorId: 'visitorId',
+  isUnique: 'isUnique',
+  referrer: 'referrer',
+  source: 'source',
+  clickedAt: 'clickedAt'
+} as const
+
+export type ClickScalarFieldEnum = (typeof ClickScalarFieldEnum)[keyof typeof ClickScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -94,4 +111,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
