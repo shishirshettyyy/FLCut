@@ -13,6 +13,10 @@ import {
   BarChart3,
   MousePointerClick,
   Trash2,
+  Pencil,
+  X,
+  Check,
+  AlertTriangle,
 } from "lucide-react";
 import AnalyticsDrawer from "./AnalyticsPanel";
 
@@ -95,6 +99,173 @@ function LinkStatus({
   );
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+/** Convert a stored ISO string to the value format expected by datetime-local */
+function toDatetimeLocal(iso: string | null | undefined): string {
+  if (!iso) return "";
+  // Slice to 'YYYY-MM-DDTHH:MM' in local time
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+    `T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  );
+}
+
+/** Convert a datetime-local string to a proper ISO string (local → UTC) */
+function localToIso(local: string): string | null {
+  if (!local) return null;
+  return new Date(local).toISOString();
+}
+
+// ── Edit Modal ─────────────────────────────────────────────────────────────────
+interface EditModalProps {
+  link: Link;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+function EditModal({ link, onClose, onSaved }: EditModalProps) {
+  const [expiresAt, setExpiresAt] = useState(
+    toDatetimeLocal(link.expiresAt)
+  );
+  const [activatesAt, setActivatesAt] = useState(
+    toDatetimeLocal(link.activatesAt)
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const nowStr = new Date().toISOString().slice(0, 16);
+
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/links/${link.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          expiresAt: localToIso(expiresAt),
+          activatesAt: localToIso(activatesAt),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to save.");
+      } else {
+        onSaved();
+        onClose();
+      }
+    } catch (err) {
+      setError("Network error — " + String(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div className="edit-modal-backdrop" onClick={onClose} />
+
+      {/* Panel */}
+      <div className="edit-modal" role="dialog" aria-modal="true">
+        {/* Header */}
+        <div className="edit-modal-header">
+          <div className="edit-modal-header-left">
+            <div className="edit-modal-icon">
+              <Pencil size={15} strokeWidth={2.5} />
+            </div>
+            <div>
+              <div className="edit-modal-title">Edit Schedule</div>
+              <div className="edit-modal-sub">
+                <span className="short-badge" style={{ fontSize: "0.72rem", padding: "1px 7px" }}>
+                  <Link2 size={9} strokeWidth={2.5} />
+                  {link.customAlias ?? link.shortCode}
+                </span>
+              </div>
+            </div>
+          </div>
+          <button className="edit-modal-close" onClick={onClose} aria-label="Close">
+            <X size={16} strokeWidth={2.5} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="edit-modal-body">
+          {/* Activates On */}
+          <div className="edit-field-group">
+            <label className="adv-label" htmlFor="edit-activates">
+              <CalendarClock size={12} strokeWidth={2.5} />
+              Activates On
+            </label>
+            <input
+              id="edit-activates"
+              className="adv-date-input"
+              type="datetime-local"
+              value={activatesAt}
+              onChange={(e) => setActivatesAt(e.target.value)}
+              disabled={saving}
+            />
+            <p className="alias-hint hint-neutral">
+              Link won&apos;t work before this time. Clear to activate immediately.
+            </p>
+          </div>
+
+          {/* Expires On */}
+          <div className="edit-field-group">
+            <label className="adv-label" htmlFor="edit-expires">
+              <CalendarX size={12} strokeWidth={2.5} />
+              Expires On
+            </label>
+            <input
+              id="edit-expires"
+              className="adv-date-input"
+              type="datetime-local"
+              value={expiresAt}
+              min={activatesAt || nowStr}
+              onChange={(e) => setExpiresAt(e.target.value)}
+              disabled={saving}
+            />
+            <p className="alias-hint hint-neutral">
+              Link returns &ldquo;expired&rdquo; after this time. Clear to never expire.
+            </p>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="edit-modal-error">
+              <AlertTriangle size={13} strokeWidth={2.5} />
+              {error}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="edit-modal-actions">
+            <button className="edit-cancel-btn" onClick={onClose} disabled={saving}>
+              Cancel
+            </button>
+            <button className="edit-save-btn" onClick={handleSave} disabled={saving}>
+              {saving ? (
+                <>
+                  <span className="spinner" style={{ width: 13, height: 13, borderWidth: 1.5 }} />
+                  Saving…
+                </>
+              ) : (
+                <>
+                  <Check size={13} strokeWidth={2.5} />
+                  Save
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────────
 export default function LinksTable({
   links,
   loading,
@@ -105,6 +276,8 @@ export default function LinksTable({
   const [activeLink, setActiveLink] = useState<Link | null>(null);
   // Map of linkId → "idle" | "confirm" | "deleting"
   const [deleteState, setDeleteState] = useState<Record<number, string>>({});
+  // Edit modal state
+  const [editingLink, setEditingLink] = useState<Link | null>(null);
 
   function openAnalytics(link: Link) {
     setActiveLink(link);
@@ -213,6 +386,7 @@ export default function LinksTable({
                       Analytics
                     </span>
                   </th>
+                  <th>Edit</th>
                   <th>Delete</th>
                 </tr>
               </thead>
@@ -295,6 +469,18 @@ export default function LinksTable({
                         </button>
                       </td>
 
+                      {/* Edit button */}
+                      <td>
+                        <button
+                          className="edit-btn"
+                          onClick={() => setEditingLink(link)}
+                          title="Edit schedule (expires / activates)"
+                        >
+                          <Pencil size={12} strokeWidth={2} />
+                          Edit
+                        </button>
+                      </td>
+
                       {/* Delete button */}
                       <td>
                         <button
@@ -329,6 +515,16 @@ export default function LinksTable({
           onClose={closeAnalytics}
         />
       )}
+
+      {/* Edit Modal */}
+      {editingLink && (
+        <EditModal
+          link={editingLink}
+          onClose={() => setEditingLink(null)}
+          onSaved={onRefresh}
+        />
+      )}
     </>
   );
 }
+
