@@ -32,16 +32,26 @@ export default function DashboardPage() {
   const [links, setLinks] = useState<Link[]>([]);
   const [fetching, setFetching] = useState(false);
   const [newestId, setNewestId] = useState<number | null>(null);
+  const [userLinkIds, setUserLinkIds] = useState<number[]>([]);
 
   const baseUrl =
     typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+
+  useEffect(() => {
+    const saved = localStorage.getItem("flcut_user_links");
+    if (saved) setUserLinkIds(JSON.parse(saved));
+  }, []);
 
   const fetchLinks = useCallback(async () => {
     setFetching(true);
     try {
       const res = await fetch("/api/links");
       const data = await res.json();
-      if (Array.isArray(data)) setLinks(data);
+      if (Array.isArray(data)) {
+        const saved = JSON.parse(localStorage.getItem("flcut_user_links") || "[]");
+        const filtered = data.filter((l: Link) => saved.includes(l.id));
+        setLinks(filtered);
+      }
     } catch {
       // silent
     } finally {
@@ -54,6 +64,9 @@ export default function DashboardPage() {
   }, [fetchLinks]);
 
   function handleNewLink(link: Link) {
+    const updatedIds = [...userLinkIds, link.id];
+    setUserLinkIds(updatedIds);
+    localStorage.setItem("flcut_user_links", JSON.stringify(updatedIds));
     setNewestId(link.id);
     fetchLinks();
     setTimeout(() => setNewestId(null), 2500);
